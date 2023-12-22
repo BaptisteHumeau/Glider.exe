@@ -1,0 +1,168 @@
+TITLE:
+
+Student name: Baptiste Humeau
+Section: CSCI200 B
+Project name: GLIDER.EXE
+
+--------------------------------------------------------------------------------------------------------------------------------------------------
+
+PROBLEM DESCRIPTION: 
+
+In plan view, the user controls a “glider” object through a void. The glider has a set forward and downward speed.
+Note that the downward movement will not be noticeable in plan view and is instead reflected in a counter.
+The user can turn the glider left or right and speed up using the computer keyboard. 
+
+Invisible objects or “thermals” randomly appear within the otherwise empty field. When the glider object encounters a thermal, it gains altitude. 
+Thermals vary in strength and width and are made up of two “rings” - inner rings have greater strength than outer rings.
+Thermals can stack on top of each other, generating greater lift.
+
+Obstacle objects appear from a random edge of the window and travel through the screen.
+Obstacles appear in increasing frequency as the game continues.
+Colliding the glider with an obstacle results in a game over.
+
+When turning or speeding up, the glider looses altitude faster.
+When experiencing lift, the glider changes color based on the strength of lift.
+
+The objective is to make it as high as possible or survive for as long as possible. 
+
+Results of each game are outputted to a text file and read during each game to keep track of high scores. The user can choose to clear scores.
+
+--------------------------------------------------------------------------------------------------------------------------------------------------
+
+PROGRAM DOCUMENTATION: 
+
+Program must be built with SFML.
+
+Playing instructions should be displayed at all relevant times, but in case they aren't (although that probably means the game has crashed),
+critical keys are as follow:
+
+WHILE ON INTRO SCREEN:
+    UP Arrow: start game
+    C: clear scores (confirm clear scores with C, cancel with Q)
+    Q: Quit
+
+WHILE ON GAME SCREEN:
+    UP Arrow: increase speed (loose altitude faster)
+    LEFT Arrow: turn left
+    Right Arrow: turn right
+    P: Pause
+    Q: return to menu
+
+WHILE ON GAME OVER SCREEN:
+    UP Arrow: return to menu
+    Q: quit program
+
+AT ANY TIME:
+    ESC: quit program
+
+The VISIBLE_THERMALS bool can be set to true to see how thermals are generated and / or for testing purposes.
+
+All constant variables in main.cpp can be tweaked to change some gameplay.
+
+The glider sprite can be replaced by a triangle by setting the "useSprite" bool to false - initially meant as a catch in case texture loading fails.
+Not so helpful anymore as no other texture loading include a similar catch. With more time and effort, a more fledged out project could
+handle these potential errors too.
+
+Many things changed from the original program description, which was kept brief to account for any roadblocks.
+The program now includes three different screens, high score tracking / managing, color changes in the glider, obstacles, and animated 
+instructions. The driving force behind most of these changes is that I had to find a "productive" way to procrastinate doing work for my 
+other classes.
+
+--------------------------------------------------------------------------------------------------------------------------------------------------
+
+CLASS DESCRIPTION:
+
+Glider:
+    Allows for convenient tracking of glider speed, position, direction, rotation, color.
+    Can be reset easily.
+
+Altimeter:
+    Allows for convenient tracking of altitude, color (to match glider color).
+    Can be easily updated according to descent rate or thermal strength.
+    Can be reset easily.
+
+Thermal:
+    Allows for convenient tracking of each thermal's size, strength, position.
+    Populates a thermal vector in main.cpp
+    Can be randomly generated easily.
+
+Obstacle:
+    Allows for convenient tracking of each obstacle's glider speed, position, direction.
+    Populates an obstacle vector in main.cpp
+    Can be randomly generated easily.
+
+Gamelog:
+    Allows for convenient tracking / analysis / managment of game data through a text file.
+    Can be reset easily.
+
+Instructions:
+    Allows for convenient tracking / display / animation of game instructions.
+    Can be updated easily.
+
+IntroScreen:
+    Encapsulates all necessary elements for the intro screen (title, highscores, instructions)
+
+GameOverScreen:
+    Encapsulates all necessary elements for the intro screen (title, scores, instructions)
+
+GameClock:
+    Tracks and displays the time spent during a game.
+    Can be reset easily.
+
+--------------------------------------------------------------------------------------------------------------------------------------------------
+
+LIST DATA STRUCTURE: 
+
+I used mostly vectors containing pointers to objects. 
+These the only data structure I knew at the time. In hindsight, linked lists probably would have been most useful in this context as elements are 
+removed and added many times, and all element access is done by traversing the list with for loops anyway.
+
+The vectors are used to store pointers to new thermal and obstacle objects, and are traversed to compare the glider position to each element to 
+check for collisions / whether the glider is within a thermal. They are also traversed to draw sfml elements.
+
+One "trail" vector contains pointers to sf::CircleShape elements that mark the path of the glider.
+
+--------------------------------------------------------------------------------------------------------------------------------------------------
+
+FILE I/O:
+
+File I/O is used to keep track and manage highscores. The "GameLog" class can read/write/clear data from/to a "gamelog.txt" file. The class also
+calculates highscores to be displayed and updated. These scores and the date at which they were set are updated and displayed after every game, 
+and the user can choose to clear their scores.
+
+--------------------------------------------------------------------------------------------------------------------------------------------------
+
+REFLECTIONS: 
+
+This project was a lot of fun! Aside from some of the basic game logic, most of what I learned came about 3/4th into the timeline and was
+mostly related to fixing mistakes I had made. There are still a number of things that could, and probabily should be fixed. The main.cpp file lives
+on some 600 or so lines of code, and that seems excessive. Below are some items that standout to me.
+
+Trail vector:
+    This shoulld probably be a class of its own. It works fine as is, but as an example, one feature I wanted to add was to change the color of 
+    each circle within the trail according to the thermal strenght at its location -- this seems impractical to do in main.cpp, and would be much 
+    more convenient to implement if the trail were its own class. This would be time consuming and does not seem like a particularly challenging or 
+    productive use of my time, though, so it remains as is.
+
+Other vectors:
+    Come to think about it, every vector in main.cpp would be better off as its own class. Thinking specifically about checking whether the glider 
+    is within a thermal - this is a bulky block of code that could easily have been tucked away neatly in a "ThermalGroup" class method.
+
+Inheritance:
+    There are a couple places where inheritance could be useful. Thinking specifically of some simpler .draw() methods, loading fonts, 
+    loading sprites, etc. 
+
+GameLog class:
+    The gamelog class randomly includes an sfml::Text object to display the scores during the game. This already made little sense when the 
+    in-game screen was the only place that scores were displayed, and even less so now that they are displayed and updated in multiple places.
+    This text object shoulc clearly be its own entity. 
+    This wouldn't be too back-breaking to fix, but it works fine, I wouldn't learn very much doing it, and I have finals coming up. Sounds
+    liek it's staying as is too. 
+
+Memory leaks:
+    I'm not sure where and how to fix it, but I find it highly unlikely that I got everything right without creating at least a couple memory 
+    leaks here and there.
+
+A lot of these issues arose from poor planning. I had one solution that worked within the scope in which I was working at one time, but that 
+ended up more burdensome as the project went one. Some of this is because I did not really expect to work on this project for so long
+and just kept piling things on the project without any real planning.
