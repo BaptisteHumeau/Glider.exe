@@ -1,5 +1,5 @@
 # THE NAME OF YOUR EXECUTABLE
-TARGET = FP
+TARGET = Glider
 # ALL CPP COMPILABLE IMPLEMENTATION FILES THAT MAKE UP THE PROJECT
 SRC_FILES = main.cpp Glider.cpp Altimeter.cpp Thermal.cpp Gamelog.cpp Introscreen.cpp Instructions.cpp Obstacle.cpp GameOverScreen.cpp GameClock.cpp
 
